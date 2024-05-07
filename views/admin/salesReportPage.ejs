@@ -1,0 +1,308 @@
+<%- include('../admin/layouts/header.ejs')  %>
+<%- include('../admin/layouts/aside.ejs')  %>
+<%- include('../admin/layouts/headerNav.ejs')  %>
+   
+
+
+
+            
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-secondary text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0"></h6>
+                    </div>
+                    <form id="salesReportForm">
+                        <div class="row">
+                            <div class="mb-3 col-lg-6">
+                                <label for="startDate" class="form-label">Start Date:</label>
+                                <input type="date" style="background-color: white;" class="form-control" id="startDate"
+                                    name="startDate" required>
+                            </div>
+                            <div class="mb-3 col-lg-6">
+                                <label for="endDate" class="form-label">End Date:</label>
+                                <input type="date" style="background-color: white;" class="form-control" id="endDate"
+                                    name="endDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary me-2" id="viewSalesreport">View Sales
+                                Report</button>
+                            <button type="button" class="btn btn-success" id="DownloadSalesreport">Download Sales
+                                Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="container-fluid pt-4  px-4 ">
+                <div class="bg-secondary text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between ">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table text-start align-middle table-bordered table-hover mb-0" id="dataTable"
+                            >
+                            <thead>
+                                <tr class="text-danger">
+                                    <th scope="col ">OrderID</th>
+                                    <th scope="col">user Name</th>
+                                    <th scope="col">order Status</th>
+                                    <th scope="col">total Amount</th>
+                                    <th scope="col">payment Method</th>
+                                    <th scope="col">order Date</th>
+                                    <th scope="col">updated At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <!-- <td>66260118a3ad9246c8aee831</td>
+                                    <td>adah</td>
+                                    <td>ordered </td>
+                                    <td>1</td>
+                                    <td>cod</td>
+                                    <td>22/4/2024</td>
+                                    <td>22/4/2024 </td> -->
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <!-- Content End -->
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    
+
+    <script>
+
+
+
+
+        document.getElementById('viewSalesreport').addEventListener('click', () => {
+            let startdate = document.getElementById('startDate').value;
+            let endDate = document.getElementById('endDate').value;
+            fetch('/admin/getSalesData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    startdate, endDate
+                })
+            }).then(response => {
+                return response.json()
+            }).then(data => {
+                console.log("hh",data); 
+                // if (data && data.salesData) {
+                //  const { salesData } = data;
+                // console.log("Sales Data:", salesData);
+                if (data) {
+                    const { value, StringSalesData } = data
+                    console.log("Value:", value);
+                    console.log("StringSalesData:", StringSalesData);
+
+                    if (value == 1) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: "please select date !!",
+                            showConfirmButton: false,
+                            showClass: {
+                                popup: `
+                              animate__animated
+                             animate__fadeInUp
+                          animate__faster   
+                             `
+                            },
+                            hideClass: {
+                                popup: `
+                                 animate__animated
+                                 animate__fadeOutDown
+                                 animate__faster
+                                    `
+                            }
+                        });
+                    } else {
+                        
+                        let table = document.getElementById('dataTable');
+                        let tbody = table.querySelector('tbody');
+                        tbody.innerHTML = ""; // Clear existing rows
+                        console.log(StringSalesData);
+                        // Assuming StringSalesData is an array of objects
+                        StringSalesData.forEach(order => {
+                            let row = tbody.insertRow();
+                            row.insertCell(0).textContent = order.id;
+                            row.insertCell(1).textContent = order.customerID;
+                            row.insertCell(2).textContent = order.orderStatus;
+                            row.insertCell(3).textContent = `₹${order.totalAmount}`;
+                            row.insertCell(4).textContent = order.paymentMethod;
+                            row.insertCell(5).textContent = order.orderDate;
+                            row.insertCell(6).textContent = order.updateAt;
+                        });
+
+                        // Show the table if it was hidden
+                        table.style.display = 'block';
+
+                    }
+                }
+            }).catch(error => {
+                console.log(error);
+            })
+        })
+
+        
+
+        document.getElementById('DownloadSalesreport').addEventListener('click', async () => {
+
+            let startdate = document.getElementById('startDate').value;
+            let endDate = document.getElementById('endDate').value;
+            fetch('/admin/getSalesData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    startdate, endDate
+                })
+            }).then(response => {
+                return response.json()
+            }).then(async data => {
+                if (data) {
+                    const { value, StringSalesData } = data
+
+                    if (value == 1) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: "please select date !!",
+                            showConfirmButton: false,
+                            showClass: {
+                                popup: `
+                              animate__animated
+                             animate__fadeInUp
+                          animate__faster   
+                             `
+                            },
+                            hideClass: {
+                                popup: `
+                                 animate__animated
+                                 animate__fadeOutDown
+                                 animate__faster
+                                    `
+                            }
+                        });
+                    } else {
+                        let table = document.getElementById('dataTable');
+                        let tbody = table.querySelector('tbody');
+                        tbody.innerHTML = ""; // Clear existing rows
+                        // Assuming StringSalesData is an array of objects
+                        StringSalesData.forEach(order => {
+                            let row = tbody.insertRow();
+                            row.insertCell(0).textContent = order.id;
+                            row.insertCell(1).textContent = order.customerID;
+                            row.insertCell(2).textContent = order.orderStatus;
+                            row.insertCell(3).textContent = `₹${order.totalAmount}`;
+                            row.insertCell(4).textContent = order.paymentMethod;
+                            row.insertCell(5).textContent = order.orderDate;
+                            row.insertCell(6).textContent = order.updateAt;
+                        });
+
+                        const inputOptions = new Promise((resolve) => {
+                            setTimeout(() => {
+                                resolve({
+                                    "Excel": "Excel",
+                                    "pdf": "pdf",
+                                    "Both": "Both"
+                                });
+                            }, 1000);
+                        });
+                        const { value: type } = await Swal.fire({
+                            title: "Select type",
+                            input: "radio",
+                            inputOptions,
+                            inputValidator: (value) => {
+                                if (!value) {
+                                    return "You need to choose something!";
+                                }
+                            }
+                        });
+                        if (type) {
+                            if (type == 'Excel') {
+                                downloadAsExcel()
+                            } else if (type == 'pdf') {
+                                downloadAsPDF()
+                            } else {
+                                downloadAsExcel()
+                                downloadAsPDF()
+                            }
+                        }
+
+                    }
+                }
+            }).catch(error => {
+                console.log(error);
+            })
+
+
+        })
+
+
+
+        function downloadAsExcel() {
+            let table = document.getElementById('dataTable');
+            let ws = XLSX.utils.table_to_sheet(table);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sales Data');
+            XLSX.writeFile(wb, 'sales_data.xlsx');
+        }
+
+        function downloadAsPDF() {
+            console.log('its here');
+            window.jsPDF = window.jspdf.jsPDF;
+            let table = document.getElementById('dataTable');
+            let pdf = new jsPDF();
+            pdf.autoTable({ html: '#dataTable' });
+            pdf.save('sales_data.pdf');
+        }
+
+
+    </script>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/adminAssets/lib/chart/chart.min.js"></script>
+    <script src="/adminAssets/lib/easing/easing.min.js"></script>
+    <script src="/adminAssets/lib/waypoints/waypoints.min.js"></script>
+    <script src="/adminAssets/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="/adminAssets/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="/adminAssets/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="/adminAssets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="/scripts/main.js"></script>
+</body>
+
+</html>

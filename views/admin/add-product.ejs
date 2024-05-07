@@ -1,0 +1,99 @@
+<%- include('../admin/layouts/header.ejs')  %>
+<%- include('../admin/layouts/aside.ejs')  %>
+<%- include('../admin/layouts/headerNav.ejs')  %>
+
+
+      <section>
+        <!-- Product Edit Form Start -->
+        <div class="container mt-4 d-flex justify-content-center">
+          <div class="col-md-6">
+            <div class="card p-4">
+              <h2 class="text-center mb-4">Add New Product</h2>
+              <form action="/admin/add-product" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="<%=category%>">
+                <div class="mb-3">
+                  <label for="productName" class="form-label">Product Name</label>
+                  <input type="text" class="form-control" id="productName" name="name" placeholder="Enter product name"
+                    required>
+                  <div class="error-message" id="errorPassword">
+                    <div class="error-message text-primary mt-2">
+                      <% if (typeof message !=='undefined' ) { %>
+                        <%= message %>
+                    </div>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="productDescription" class="form-label">Product Description</label>
+                  <textarea class="form-control" id="productDescription" name="description" rows="3" required
+                    placeholder="Enter product description"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="detailedDescription" class="form-label">Detailed description</label>
+                  <textarea class="form-control" id="detailedDescription" name="detailedDescription" rows="3" required
+                    placeholder="Enter product detailed description"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="productPrice" class="form-label">Product Price</label>
+                  <input type="number" class="form-control" id="productPrice" name="price"
+                    placeholder="Enter product price" required>
+                </div>
+                <div class="mb-3">
+                  <label for="productCategory" class="form-label">Product Category</label>
+                  <select class="form-select" id="productCategory" name="category" required>
+                    <% for (let i=0 ; i < category.length ; i++) { %>
+                      <option value="<%=category[i]._id%>">
+                        <%=category[i].categoriesName%>
+                      </option>
+                      <% } %>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="productImage" class="form-label">Product Image</label>
+                  <input type="file" class="form-control" id="productImage" name="images" accept="image/*" multiple
+                    required>
+                </div>
+                <!-- <div class="mb-3">
+                  <label for="productImage" class="form-label">Product Image</label>
+                  <input type="file" class="form-control" id="productImage" name="images" accept="image/*" multiple
+                    required>
+                </div> -->
+                <div class="mb-3">
+                  <label for="productSize" class="form-label">Product Weight</label>
+                  <input type="text" class="form-control" id="productWeight" name="weight" placeholder="Enter product weight"
+                    required>
+                </div>
+                <div class="mb-3">
+                  <label for="productStock" class="form-label">Product Stock</label>
+                  <select class="form-select" id="productStock" name="stock" required>
+                    <% for (let i=1; i <=10; i++) { %>
+                      <option value="<%= i %>">
+                        <%= i %>
+                      </option>
+                      <% } %>
+                  </select>
+                </div>
+                <button id="addingProduct" type="submit" class="btn btn-primary">Add Product Now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Product Edit Form End -->
+      </section>
+
+      <script>
+        uploadField.onchange = function () {
+          if (this.files[0].size > 2) {
+            alert("File is too big!");
+            // this.value = "";
+          }
+        }
+
+      </script>
+
+
+
+
+
+
+

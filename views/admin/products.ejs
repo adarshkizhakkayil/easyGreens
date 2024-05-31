@@ -129,7 +129,6 @@
                 <a href="/admin/products" class="nav-item nav-link active"><i class="fa fa-th me-2"></i>Products</a>
                 <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Orders</a>
                 <a href="/admin/coupon" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Coupons</a>
-                <a href="/admin/offer" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Offers</a>
                 <a href="/admin/salesReport" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Sales Report</a>
             </div>
         </nav>
@@ -260,7 +259,6 @@
                         <th scope="col">price</th>
                         <th scope="col">stock</th>
                         <th scope="col">weight</th>
-                        <th scope="col">Offers</th>
                         <th>EditProduct</th>
                         <th scope="col">ListProduct</th>
                         
@@ -272,6 +270,7 @@
                     <tbody>
                       <%product.reverse()%>
                         <% for (let i=0 ; i < product.length ; i++ ) { %>
+                            
                           <tr id="productRow<%= product[i].id %>">
                             <th scope="row">
                               <%=i+1%>
@@ -302,18 +301,6 @@
                             </td>
                             <td>
                               <%=product[i].weight%>
-                            </td>
-                            <td> <% if ( product[i].offer ){%>
-
-                              <button onclick="removeOffer('<%= product[i]._id %>')"
-                                  class="btn btn-sm btn-outline-warning rounded font-sm">
-                                  Remove offer </button>
-                              <% } else {%>
-                                  <button class=" btn btn-sm btn-outline-primary rounded
-                                  font-sm" onclick="offerListModal('<%= product[i]._id %>')">
-                                      Apply offer
-                                  </button>
-                                  <% }%>  
                             </td>
                             <td>
                                 <a href="/admin/edit-product/<%=product[i].id%>"><button
@@ -423,14 +410,12 @@ document.querySelectorAll('.unlisted').forEach(button => {
             openCustomModal();
 
         }
-        console.log(productid, action);
     })
 })
 
 document.querySelectorAll('.data-id button').forEach(button => {
     button.addEventListener('click', () => {
         const event = button.getAttribute('data-event');
-        console.log(event, productid);
 
         if (action == 'Listed') {
             if (event == 'yes') {
@@ -466,37 +451,8 @@ document.querySelectorAll('.data-id button').forEach(button => {
 
 
 
-async function offerListModal(productId){
-     $('#discountModal').modal('show')
-   const divModal= document.querySelectorAll('.modalBody')
-       divModal.forEach((element)=>{
-           element.onclick=(function(){
-            const offerId=this.getAttribute('data-offerId')
-             enterOffer(offerId,productId)
-           })
-             
-       })
-    }
 
 
-
-    async function enterOffer(offerId,productId){
-    try {
-     $('#discountModal').modal('hide')
-    const response=await axios.patch('/admin/applyProductOffer',{offerId,productId})
-     if(response.data.success==true){
-        console.log(response.data);
-        Swal.fire('Offer applied')
-        window.location.href='/admin/products'
-     }else{
-         Swal.fire('Failed to apply offer');
-     }
-    
-    } catch (error) {
-    console.error('Error applying offer:', error);
-    Swal.fire('Error applying offer');
-    }
-    }
 
 </script>
 

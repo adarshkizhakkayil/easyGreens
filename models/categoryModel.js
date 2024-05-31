@@ -10,10 +10,6 @@ const categorySchema = mongoose.Schema({
     is_listed : {
         type : Number,
         default : 0
-    },
-    offer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Offer'
     }
 })
 

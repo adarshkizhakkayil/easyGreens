@@ -2,100 +2,183 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EasyGreens</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Page</title>
 
-  <!-- Google Font -->
-  <link href="/images/shoezy.jpg" rel="icon">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
-  <!-- Css Styles -->
-  <link rel="stylesheet" href="/user/signup/css/bootstrap.min.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/elegant-icons.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/magnific-popup.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/nice-select.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/owl.carousel.min.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/slicknav.min.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/style1.css" type="text/css">
-  <link rel="stylesheet" href="/user/signup/css/style.css">
+    <!-- Google Font -->
+    <link href="" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/user/signup/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/style1.css" type="text/css">
+    <link rel="stylesheet" href="/user/signup/css/style.css">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .form-container .title {
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group input:focus {
+            border-color: #7fad39;
+            outline: none;
+        }
+
+        .button {
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            background-color: #7fad39;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #6e9a2e;
+        }
+
+        .signin {
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+        }
+
+        .signin a {
+            color: #7fad39;
+            text-decoration: none;
+        }
+
+        .signin a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 15px 20px;
+            }
+
+            .button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-  <div id="preloder">
-    <div class="loader"></div>
-  </div>
-
-  <div class="container d-flex justify-content-center align-items-center h-100">
-    <div class="row ">
-      <div class="col-md-12 mt-4">
-        <div class="form-container">
-          <form class="form" action="/signup" method="post" id="registrationForm">
-            <p class="title text-center message">Create An Account</p>
-            <div class="flex">
-              <label>
-                <input id="firstname" name="firstname" required required minlength="2" maxlength="20" placeholder=""
-                  type="text" class="input">
-                <span>Firstname</span>
-              </label>
-              <label>
-                <input required="" id="lastname" name="lastname" required placeholder="" type="text" class="input">
-                <span>Lastname</span>
-              </label>
-            </div>
-
-            <label>
-              <input required="" placeholder="" id="email" name="email" type="email" class="input">
-              <span>Email</span>
-              <div class="error-message" id="errorEmail">
-                <% if (typeof message1 !=='undefined' ) { %>
-                  <%= message1 %>
-                    <% } %>
-              </div>
-            </label>
-            <label>
-              <input required="" placeholder="" id="mobile" name="mobile" type="number" class="input" required>
-              <span>Mobile</span>
-            </label>
-
-            <label>
-              <input required="" placeholder="" id="password" name="password" type="password" required min="6" max="30"
-                class="input">
-              <span>Password</span>
-            </label>
-            <label>
-              <input required="" placeholder="" id="password1" name="password1" type="password" required min="6"
-                max="30" class="input">
-              <span>Confirm password</span>
-            </label>
-            <button type="submit" class="button">
-              Signup
-            </button>
-            <p class="signin">Already have an acount ? <a href="/login">Login</a> </p>
-          </form>
-          </p>
-        </div>
-      </div>
+    <div id="preloder">
+        <div class="loader"></div>
     </div>
-  </div>
 
+    <div class="container d-flex justify-content-center align-items-center h-100">
+        <div class="row ">
+            <div class="col-md-12 mt-4">
+                <div class="form-container">
+                    <form class="form" action="/signup" method="post" id="registrationForm">
+                        <p class="title text-center message">Create An Account</p>
+                        <div class="flex">
+                            <label>
+                                <input id="firstname" name="firstname" required minlength="2" maxlength="20" placeholder="" type="text" class="input">
+                                <span>Firstname</span>
+                            </label>
+                            <label>
+                                <input required id="lastname" name="lastname" placeholder="" type="text" class="input">
+                                <span>Lastname</span>
+                            </label>
+                        </div>
 
+                        <label>
+                            <input required placeholder="" id="email" name="email" type="email" class="input">
+                            <span>Email</span>
+                            <div class="error-message" id="errorEmail">
+                                <% if (typeof message1 !=='undefined' ) { %>
+                                    <%= message1 %>
+                                <% } %>
+                            </div>
+                        </label>
+                        <label>
+                            <input required placeholder="" id="mobile" name="mobile" type="number" class="input">
+                            <span>Mobile</span>
+                        </label>
 
+                        <label>
+                            <input required placeholder="" id="password" name="password" type="password" min="6" max="30" class="input">
+                            <span>Password</span>
+                        </label>
+                        <label>
+                            <input required placeholder="" id="password1" name="password1" type="password" min="6" max="30" class="input">
+                            <span>Confirm password</span>
+                        </label>
+                        <button type="submit" class="button">
+                            Signup
+                        </button>
+                        <p class="signin">Already have an account? <a href="/login">Login</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script src="/user/signup/scripts/script.js"></script>
-  <script src="/user/signup/js/jquery-3.3.1.min.js"></script>
-  <script src="/user/signup/js/bootstrap.min.js"></script>
-  <script src="/user/signup/js/jquery.slicknav.js"></script>
-  <script src="/user/signup/js/jquery.nice-select.min.js"></script>
-  <script src="/user/signup/js/jquery.nicescroll.min.js"></script>
-  <script src="/user/signup/js/jquery.magnific-popup.min.js"></script>
-  <script src="/user/signup/js/jquery.countdown.min.js"></script>
-  <script src="/user/signup/js/mixitup.min.js"></script>
-  <script src="/user/signup/js/owl.carousel.min.js"></script>
-  <script src="/user/signup/js/main.js"></script>
+    <script src="/srcripts/script.js"></script>
+    <script src="/user/signup/js/jquery-3.3.1.min.js"></script>
+    <script src="/user/signup/js/jquery.slicknav.js"></script>
+    <script src="/user/signup/js/jquery.nice-select.min.js"></script>
+    <script src="/user/signup/js/jquery.nicescroll.min.js"></script>
+    <script src="/user/signup/js/jquery.magnific-popup.min.js"></script>
+    <script src="/user/signup/js/jquery.countdown.min.js"></script>
+    <script src="/user/signup/js/mixitup.min.js"></script>
+    <script src="/user/signup/js/owl.carousel.min.js"></script>
+    <script src="/user/signup/js/main.js"></script>
 </body>
 
 </html>

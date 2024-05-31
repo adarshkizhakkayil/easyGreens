@@ -271,10 +271,24 @@
 									<a href="/logout" class="nav-item nav-link font-weight-bold pt-4"
                                     style="color: black;"><i class="fa fa-sign-out"></i> Logout</a>
 								</li>
-                                
+                                <a class="btn text-dark d-flex-column  border-0">
+                                    <div class="wallet-header"> 
+                                      Refer to your friends and earn Rs:100  in each.
+                                    </div>
+                                      <div>
+                                      <h6>Your referral link : </h6>
+                                      <h6 class="text-primary" id="referral-link">http://localhost:8000/signup/<%=user._id%> </h6>
+                                      </div>
+                                      <div class="p-4">
+                                      <button id="copyButton" class=" border-0">copy</button>
+                                      </div>
+                                    <span id="copySuccessMessage" class="d-none fw-bold text-success"> Text copied to clipboard! </span>
+                                  </a> 
 							</ul>
+                            
 						</div>
 					</div>
+                    
 				</div>
                 <div class="col-lg-1"></div>
 				<div class="col-lg-8">
@@ -318,7 +332,7 @@
                         </div>
                     </div>
 					<div class="row">
-                        <div class="col-md-6 mt-5 ">
+                        <div class="col-md-12 mt-12 ">
                             <div class="checkout__title mt-0" style="margin-left: 6px;">
                                 <% if (Address) { %>
                                     <h5>Shipping Addresses</h5>
@@ -441,20 +455,6 @@
  
 
 
-    <div class="container mt-4 mb-4">
-        <div class="row">
-            <div class="col-md-9">
-                <!-- Main Content -->
-                <div class="checkout__title mt-5" style="margin-left: 6px;">
-                    <h5>Personal Information</h5>
-                </div>
-            </div>
-            <!-- Sidebar -->
-            
-            <!-- Sidebar -->
-            
-        </div>
-    </div>
     <!-- Modal to display coupon details -->
     <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel"
     aria-hidden="true">
@@ -589,6 +589,28 @@
 
 
     <script>
+
+        document.getElementById("copyButton").addEventListener("click", function () {
+        const referralLink = document.getElementById("referral-link").textContent;
+
+        const tempInput = document.createElement("input");
+        tempInput.value = referralLink;
+        document.body.appendChild(tempInput);
+
+        tempInput.select();
+        document.execCommand("copy");
+
+        document.body.removeChild(tempInput);
+
+        const successMessage = document.getElementById("copySuccessMessage");
+        successMessage.classList.remove("d-none");
+
+        setTimeout(function () {
+            successMessage.classList.add("d-none");
+        }, 3000);
+        });
+
+
         function openCouponModal() {
           // Show the modal
           $('#couponModal').modal('show');
@@ -605,8 +627,6 @@
                         otherCheckbox.disabled = true;
                     }
                 });
-                // Now you can use the userId variable as needed
-                console.log('Selected User ID:', userId);
             } else {
                 // Enable all checkboxes
                 document.querySelectorAll('[name="useAddress"]').forEach(function (otherCheckbox) {
@@ -843,7 +863,6 @@
                 }
             });
 
-            console.log(streetAddress, apartment, city, state, zip, country);
             fetch('/user-account', {
                 method: 'POST',
                 headers: {

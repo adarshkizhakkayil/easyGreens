@@ -59,22 +59,8 @@ const mongoose=require("mongoose");
                 }
             }
         ]
-    },
-    referralCode: {
-        type: String,
-        required: true,
-        unique: true,
-      },
-      referredBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-      isReferred: {
-        type: Boolean,
-      },
-      referralClickedAt: { // Optional field for referral tracking
-        type: Date,
-      },
+   }
+    
     
  });
  

@@ -70,7 +70,6 @@ function updateChart({ orderCount}) {
     const dateLabels = getPastSevenDays();
     const today = getFormattedToday();
 
-    console.log(dailyorders,today,orderCount);
     // Determine the y-axis max value based on the orderCount
     const yAxisMax = Math.ceil(orderCount / 10) * 10;
 

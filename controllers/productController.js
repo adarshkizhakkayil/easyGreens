@@ -1,22 +1,9 @@
 const products = require('../models/productModel');
 const categories = require('../models/categoryModel');
-const Offer = require('../models/offerModel')
 
 
 
-const calculateDiscountOne = (product) => {
-    let discount = 0;
-  
-    if (product.offer && product.offer.expiryDate && new Date(product.offer.expiryDate) >= new Date()) {
-      discount = (product.price * product.offer.percentage / 100).toFixed(0);
-      return { discountedPrice: product.price - discount, discount };
-    } else if (product.categoryId && product.categoryId.offer && product.categoryId.offer.expiryDate && new Date(product.categoryId.offer.expiryDate) >= new Date()) {
-      discount = (product.price * product.categoryId.offer.percentage / 100).toFixed(0);
-      return { discountedPrice: product.price - discount, discount };
-    } else {
-      return { discountedPrice: product.price, discount };
-    }
-  };
+
 
 const loadProducts = async (req, res) => {
 
@@ -46,50 +33,6 @@ const LoadAddProducts = async (req, res) => {
     }
 
 }
-
-// const addProducts = async (req, res) => {
-
-//     try {
-//         const category = await categories.find({ is_listed: 0 })
-//         const { name: productName, description,detailedDescription, price: Prize,  weight, stock } = req.body
-//         if (Prize <= 0) {
-//             return res.render('add-product', { message: 'Price must be a positive value.', category });
-//         }
-
-//         const existingproduct = await products.findOne({
-//             productName: { $regex: new RegExp(`^${productName}$`, 'i') }
-//         });
-
-//         if (existingproduct) {
-//             const category = await categories.find({ is_listed: 0 })
-//             res.render('add-product', { message: 'This product name already exists.  !' ,category});
-//         } else {
-//             const image = req.files.map((file) => file.filename);
-//             const addNewProduct = await new products({
-//                 productName,
-//                 image,
-//                 description,
-//                 detailedDescription,
-//                 Prize,
-//                 weight,
-//                 stock,
-//                 category,
-//                 is_listed: 0
-//             })
-//             const saving = await addNewProduct.save();
-//             if (saving) {
-//                 res.redirect('/admin/products')
-//             }
-//         }
-
-//     } catch (error) {
-
-//         console.log(error.message);
-//         res.status(500).render('error')
-
-//     }
-// }
-
 
 const addProducts = async (req, res) => {
     try {

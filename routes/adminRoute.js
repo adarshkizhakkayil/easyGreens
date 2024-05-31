@@ -9,7 +9,6 @@ const session=require("express-session");
 const categoryController=require("../controllers/categoryController");
 const productController=require("../controllers/productController");
 const couponController = require('../controllers/couponController');
-const offerController = require('../controllers/offerController');
 const orderController=require("../controllers/orderController");
 const adminController=require("../controllers/adminController");
 
@@ -31,12 +30,6 @@ adminRoute.use(session({
 // Set view engine and views
 adminRoute.set('view engine','ejs');
 adminRoute.set('views',path.join(__dirname,"..","views","admin"));
-
-
-
-
-
-
 
 
 
@@ -79,13 +72,6 @@ adminRoute.post('/dashboard',adminAuth.isLoggedIn,adminController.salesData);
 adminRoute.get('/salesReport',adminAuth.isLoggedIn,adminController.LoadSalesReport);
 adminRoute.post('/getSalesData',adminAuth.isLoggedIn,adminController.getSalesData);
 
-adminRoute.get('/addOffer', adminAuth.isLoggedIn, offerController.loadAddOffer)
-adminRoute.post('/addOffer', offerController.postAddOffer)
-adminRoute.get('/offer', adminAuth.isLoggedIn, offerController.loadOffer)
-adminRoute.post('/deleteOffer', offerController.postDeleteOffer)
-adminRoute.patch('/applyProductOffer', offerController.patchApplyProductOffer)
-adminRoute.patch('/removeProductOffer', offerController.patchRemoveProductOffer)
-adminRoute.patch('/applyCategoryOffer', offerController.patchApplyCategoryOffer)
-adminRoute.patch('/removeCategoryOffer', offerController.patchRemoveCategoryOffer)
+
 
 module.exports=adminRoute

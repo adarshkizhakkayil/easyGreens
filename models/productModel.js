@@ -48,11 +48,7 @@ const productSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user'
         }
-    },
-    offer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Offer',
-    },
+    }
 
 }, { timestamps: true })
 

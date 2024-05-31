@@ -4,78 +4,55 @@ const user=require('../models/userModel');
 const wishlist=require('../models/wishlistModel');
 
 
+const checkCart = async (req, res) => {
+    try {
+        if (req.session.user) {
+            res.status(200).json({ message: 'user is there ', value: 1 });
+        } else {
+            res.status(200).json({ message: 'please login ', value: 2 });
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).render('error')
+    }
+}
+
+
+
 const loadCart = async (req, res) => {
     try {
-      const userId = req.session.userId;
-  
-    //   if (!req.session.outOfStock) {
-    //     req.session.outOfStock = null
-    //   }
-  
-      if (!userId) {
-        res.redirect('/login');
-      } else {
-        // Fetch cart details
-        // const cartDetails = await cart.findOne({ user_id: userId }).populate({
-        //   path: 'items.product_id',
-        //   populate: [
-        //     { path: 'offer' },
-        //     {
-        //       path: 'categoryId',
-        //       populate: { path: 'offer' } // Populate the offer field in the Category model
-        //     }
-        //   ]
-        // });
-        const cartDetails = await cart.findOne({ user: userId }).populate('products.productID');
-          //console.log('iamcartdetails', cartDetails);
-  
-        const userData = await user.findOne({ _id: userId });
-          
-  
-        // Check if cartDetails is truthy before accessing its properties
-        // const cartItems = cartDetails ? cartDetails.products : [];
-        // var inStock = ''
-  
-        // for (const cartItem of cartItems) {
-        //   if (cartItem.quantity > cartItem.product_id.stockQuantity) {
-        //     inStock = 'outOfStock';
-        //     break; // Exit the loop if any item is out of stock
-        //   }
-        // }
-  
-        // req.session.outOfStock = inStock
-        // let sessionStock = req.session.outOfStock
-  
-        let originalAmts = 0;
-  
-        // if (cartDetails) {
-        //   cartDetails.products.forEach((cartItem) => {
-        //     let itemPrice = cartItem.productID.Price;  // Adjust the property based on your data model
-        //     originalAmts += itemPrice * cartItem.productID.quantity;
-        //   });
-        // }
-        if (cartDetails) {
+        const userId = req.session.userId;
 
-            cartDetails.products.forEach((cartItem) => {
-            let itemPrice = cartItem.productID.Prize;
-            let itemQuantity = cartItem.quantity;
-            // console.log("itemPrice:", itemPrice); // Log itemPrice to check its value
-            // console.log("itemQuantity:", itemQuantity); // Log itemQuantity to check its value
-            originalAmts += itemPrice * itemQuantity;
-            });
+        if (!userId) {
+            res.redirect('/login');
+        } else {
+            // Fetch cart details
+            let cartDetails = await cart.findOne({ user: userId }).populate('products.productID');
+
+            if (!cartDetails) {
+                // Initialize an empty cart if none exists
+                cartDetails = { products: [] };
+            }
+
+            const userData = await user.findOne({ _id: userId });
+
+            let originalAmts = 0;
+
+            if (cartDetails.products.length > 0) {
+                cartDetails.products.forEach((cartItem) => {
+                    let itemPrice = cartItem.productID.Prize;
+                    let itemQuantity = cartItem.quantity;
+                    originalAmts += itemPrice * itemQuantity;
+                });
+            }
+
+            res.render('shopping-cart', { user: userData, cartProducts: cartDetails, subtotal: originalAmts });
         }
-        //console.log("originalAmts",originalAmts)
-        console.log(cartDetails.products);
-        res.render('shopping-cart', { user: userData, cartProducts: cartDetails, subtotal: originalAmts });
-      }
     } catch (error) {
-      console.log(error.message);
-      //res.status(500).render('serverError', { message: error.message });
-      res.status(500).json({ success: false, message: 'Internal server error.' });
+        console.log(error.message);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
     }
-  };
-  
-
+};
 
 
 
@@ -99,7 +76,6 @@ const addToCart = async (req, res) => {
                 const checkProduct = userCart.products.find(item => item.productID.equals(productID));
 
                 if (checkProduct) {
-                    console.log('Product already exists');
                     res.status(200).json({ success: false, message: 'Product already exists in the cart', value: 1 });
                 } else {
                     // Add the new product to the existing cart if the product does not exist
@@ -113,10 +89,8 @@ const addToCart = async (req, res) => {
                     const updatedCart = await userCart.save();
 
                     if (updatedCart) {
-                        console.log('Successfully added to cart');
                         res.status(200).json({ success: true, message: 'Successfully added to cart', value: 2 });
                     } else {
-                        console.log('Failed to add to cart');
                         res.status(500).json({ success: false, error: 'Failed to add to cart', value: 3 });
                     }
                 }
@@ -134,10 +108,8 @@ const addToCart = async (req, res) => {
                 const savedCart = await newCart.save();
 
                 if (savedCart) {
-                    console.log('Successfully added to cart');
                     res.status(200).json({ success: true, message: 'Successfully added to cart', value: 2 });
                 } else {
-                    console.log('Failed to add to cart');
                     res.status(500).json({ success: false, error: 'Failed to add to cart', value: 3 });
                 }
             }
@@ -223,7 +195,8 @@ const Loadwishlist = async (req, res) => {
     try {
         const id = req.session.user._id;
         const wishlistProducts = await wishlist.findOne({ userId: id }).populate('wishlistProducts')
-        res.render('wishlist',{wishlistProducts})
+        
+        res.render('wishlist',{wishlistProducts,user:req.session.user})
 
     } catch (error) {
 
@@ -274,6 +247,7 @@ const addToWishlist = async (req, res) => {
 
 
 module.exports={
+    checkCart,
     loadCart,
     addToCart,
     incrementQuantity,

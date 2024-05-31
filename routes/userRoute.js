@@ -6,8 +6,7 @@ const session=require("express-session");
 const userController=require("../controllers/userController");
 const cartController=require("../controllers/cartController");
 const orderController = require('../controllers/orderController');
-const couponController = require('../controllers/couponController')
-
+const couponController = require('../controllers/couponController');
 const auth= require('../middleware/userAuth');
 const config=require("../config/config");
 // Use the session middleware
@@ -17,43 +16,32 @@ userRoute.use(session({
     saveUninitialized: false,
 }));
 // Set view engine and views
-// userRoute.set('view engine','ejs');//inde
 userRoute.set('views',path.join(__dirname,"..","views","user"));
-// Use body-parser middleware
-// userRoute.use(bodyParser.json());//express.json
-// userRoute.use(bodyParser.urlencoded({extended:true}))
-
-// Replace
 userRoute.use(express.json());
 userRoute.use(express.urlencoded({ extended: true }));
-
-
-
-
-
-// Define routes
-///// signup ////
+//Routes
+// Signup & login
 userRoute.get('/', auth.isLoggedOut, userController.loadHome);
-userRoute.get('/home', auth.isLoggedIn, userController.loadHome)
+userRoute.get('/home', auth.isLoggedIn, userController.loadHome);
 userRoute.get('/signup', auth.isLoggedOut, userController.loadSignup);
 userRoute.post('/signup', userController.insertUser);
-///// login ////
-userRoute.get('/login', auth.isLoggedOut,  userController.loadLogin)
-userRoute.post('/login',auth.isLoggedIn, userController.verifyLogin)
-userRoute.get('/logout',userController.logout)
-userRoute.get('/otpverification', auth.isLoggedIn, userController.loadOtp)
-userRoute.post('/otpverification', userController.verifyOtp)
-userRoute.post('/resend-otp', userController.resendOtp)
-userRoute.post('/resend-forgtotOTP', userController.resendforgotPasswordOtp)
-//// shoping ////
-userRoute.get('/shop', auth.isLoggedIn, userController.loadShop)
-userRoute.get('/product-detail', auth.isLoggedIn, userController.loadProductDetails)
+userRoute.get('/signup/:_id',auth.isLoggedOut,userController.referralSignup)
+userRoute.get('/login', auth.isLoggedOut,  userController.loadLogin);
+userRoute.post('/login',auth.isLoggedIn, userController.verifyLogin);
+userRoute.get('/logout',userController.logout);
+userRoute.get('/otpverification', auth.isLoggedIn, userController.loadOtp);
+userRoute.post('/otpverification', userController.verifyOtp);
+userRoute.post('/resend-otp', userController.resendOtp);
+userRoute.post('/resend-forgtotOTP', userController.resendforgotPasswordOtp);
+//Shop & cart
+userRoute.get('/shop', auth.isLoggedIn, userController.loadShop);
+userRoute.get('/product-detail', auth.isLoggedIn, userController.loadProductDetails);
+userRoute.get('/check-cart', auth.isLoggedIn, cartController.checkCart);
 userRoute.get('/product-cart', auth.isLoggedIn, cartController.loadCart)
 userRoute.post('/product-cart', cartController.addToCart)
 userRoute.post('/remove-product', cartController.removeProduct)
 userRoute.post('/incrementQuantity', cartController.incrementQuantity)
 userRoute.post('/decrementQuantity', cartController.decrementQuantity)
-
 //checkout
 userRoute.get('/checkout', auth.isLoggedIn, orderController.loadCheckout);
 userRoute.post('/place-order', orderController.placeOrder)
@@ -89,6 +77,7 @@ userRoute.get('/wallet',orderController.loadWalletPage);
 
 userRoute.get('/cancel', auth.isLoggedIn, orderController.renderCancelPage);
 userRoute.post('/cancel-order', auth.isLoggedIn, orderController.cancelOrder);
+userRoute.post('/return-order',orderController.returnOrder);
 
 // // userRoute.get('/about', auth.isLoggedIn, userController.loadAboutUs)
 // // userRoute.get('/contact-us', auth.isLoggedIn, userController.loadContact);

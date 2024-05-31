@@ -1,5 +1,4 @@
 const categories = require('../models/categoryModel');
-const Offer = require('../models/offerModel');
 const moment = require('moment')
 
 
@@ -7,8 +6,7 @@ const loadCategory = async (req, res) => {
 
     try {
         const categoryCollection = await categories.find();
-        const availableOffers = await Offer.find()
-        res.render('category', { category: categoryCollection,availableOffers })
+        res.render('category', { category: categoryCollection })
 
     } catch (error) {
 
@@ -45,7 +43,6 @@ const addCategories = async (req, res) => {
 
 const listCategory = async (req, res) => {
     try {
-        console.log('helloo');
         const categoryId = req.body.id
         const findcategory = await categories.findById({ _id: categoryId });
         findcategory.is_listed = false;
@@ -62,7 +59,6 @@ const listCategory = async (req, res) => {
 
 const UnlistCategory = async (req, res) => {
     try {
-        console.log('heeyy');
         const categoryId = req.body.id
         const findcategory = await categories.findById({ _id: categoryId });
         findcategory.is_listed = true;

@@ -65,7 +65,6 @@
                     <a href="/admin/products" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Products</a>
                     <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Orders</a>
                     <a href="/admin/coupon" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Coupons</a>
-                    <a href="/admin/offer" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Offers</a>
                     <a href="/admin/salesReport" class="nav-link dropdown-toggle" ><i class="far fa-file-alt me-2"></i>Sales Report</a>
                 </div>
             </nav>
@@ -172,12 +171,22 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">Add categories</h6>  
                             </div>
-                            <!-- <form action="/admin/add-category" method="post"> -->
+                            <!-- <form action="/admin/add-category" method="post"> 
                                 <div class="d-flex mb-2">
-                                    <input oninput="search(event)" class="form-control bg-transparent" type="text" name="categoryname" id="categoryname" placeholder="category name" required maxlength="12" minlength="3">
+                                    <input oninput="search(event)" class="form-control bg-transparent" type="text" name="categoriesName" id="categoryname" placeholder="category name" required maxlength="12" minlength="3">
                                     <button type="submit" class="btn btn-primary ms-2" onclick="addCategory()">Add</button>
                                 </div>
-                            <!-- </form> -->
+                             </form> -->
+
+                             <form id="categoryForm"> 
+                                <div class="d-flex mb-2">
+                                    <input oninput="search(event)" class="form-control bg-transparent" type="text" name="categoryname" id="categoryname" placeholder="Category name" required maxlength="12" minlength="3">
+                                    <button type="submit" class="btn btn-primary ms-2">Add</button>
+                                </div>
+                            </form>
+                            
+                           
+                            
                         </div>
                     </div>
                 </div>
@@ -193,7 +202,7 @@
                                     <tr>
                                         <th scope="col"></th>
                                         <th scope="col">Category Name</th>
-                                        <th scope="col">Offers</th>
+                                        
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -205,18 +214,7 @@
                                         
                                         <th scope="row">1</th>
                                         <td><%=category[i].categoriesName %></td>
-                                        <td>
-                                            <% if(category[i].offer){ %>
-                                                <button onclick="removeOffer('<%= category[i]._id %>')"
-                                                class="btn btn-sm btn-outline-warning rounded font-sm">
-                                                Remove offer </button>
-                                            <% } else {%>
-                                                <button class=" btn btn-sm btn-outline-primary rounded
-                                                font-sm" onclick="offerListModal('<%= category[i]._id %>')">
-                                                    Apply offer
-                                                </button>
-                                                <% } %>
-                                        </td>
+                                      
                                         <td>
                                             <button type="button" data-product-id="<%=category[i].id%>"
                                                 class="list-unlist btn <%=category[i].is_listed? 'btn-danger' : 'btn-success'%>"
@@ -283,27 +281,9 @@
 
     <script>
         function search(e) {
-            console.log(e.target.value)
         }
         
-        async function offerListModal(categoryId){
-            try {
-                
-         $('#discountModal').modal('show')
-        
-          const divModal= document.querySelectorAll('.modalBody')
-             divModal.forEach((element)=>{
-              element.onclick=function(){
-               const offerId=this.getAttribute('data-offerId')
-               applyOffer(offerId,categoryId)
-              }
-             })
-        
-           
-            } catch (error) {
-                
-            }
-        }
+       
         // Your client-side code goes here, including the SweetAlert handling logic
         function showSweetAlert(message) {
             Swal.fire({
@@ -313,29 +293,52 @@
             });
         }
 
-        // Example: assuming you have a function to make the API request using fetch
-        async function addCategory() {
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const categoryname = document.getElementById('categoryname').value;
+
             try {
-                // Your API request logic here...
                 const response = await fetch('/admin/add-category', {
                     method: 'POST',
-                    // ... other options
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ categoryname })
                 });
-                const responseData = await response.json();
-
-                // After successfully adding a new category, check if showAlert is true
-                if (responseData.showAlert) {
-                    showSweetAlert(responseData.message);
+                
+                const result = await response.json();
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: result.message,
+                    }).then(() => {
+                        // Refresh the page after the alert is dismissed
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.error,
+                    });
                 }
             } catch (error) {
-                console.error('Error adding category:', error);
-                // Handle error if necessary
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while adding the category.',
+                });
             }
-        }
-        
-        
-        // Call your function or handle events that trigger the API request
-        addCategory();
+        });
+
+
+
+
+
+
+
 
     </script>
 
@@ -344,7 +347,6 @@
              
         document.querySelectorAll('.list-unlist').forEach(button => {
             button.addEventListener('click', async () => {
-                console.log('working');
                 const event = button.getAttribute('data-action')
                 const id = button.getAttribute('data-product-id')
                 let url
@@ -361,7 +363,6 @@
                     });
     
                     if (!result.isConfirmed) {
-                        console.log('should be canceled');
                         return; // Cancel the operation if not confirmed
                     }
     
@@ -385,7 +386,6 @@
                     });
     
                     if (!result.isConfirmed) {
-                        console.log('should be canceled');
                         return; // Cancel the operation if not confirmed
                     }
     

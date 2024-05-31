@@ -505,8 +505,6 @@
 
     <script>
             function cancelProduct(orderId) {
-                // Add logic to handle cancellation, for example, make an AJAX request to cancel the product
-                console.log('Cancel product with orderId:', orderId);
 
 
                 Swal.fire({
@@ -573,11 +571,11 @@
                         input: "select",
                         inputOptions: {
                             Quality: "Quality issue",
-                            Size: "Wrong size",
+                            Size: "Wrong Weight",
                             Change: "Changed my mind",
                             Defective: "Defective item",
                             Unhappy: "Not satisfied",
-                            Duplicate: "Received duplicate",
+                            Duplicate: "Received Wrongly",
                             Other: "Other reasons"
                         },
                         inputPlaceholder: "Select a reason",
@@ -598,7 +596,7 @@
                         }).then(data => {
                             if (data) {
                                 Swal.fire({
-                                    text: "Thanks! Your return is in progress. Expected back within one week.",
+                                    text: "Thanks! .",
                                     icon: "success",
                                     showConfirmButton: false,
                                     timer: 2000
@@ -725,7 +723,6 @@
                     var elementId = 'pdf';
                     easyinvoice.createInvoice(data, function (result) {
                         easyinvoice.render(elementId, result.pdf, function () {
-                            console.log('Invoice rendered!');
                         });
                     });
 

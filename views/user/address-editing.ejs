@@ -212,7 +212,6 @@
                     if (otherCheckbox !== checkbox) {
                         otherCheckbox.disabled = true;
                         location.href=`/checkout?id=${userId}`
-                        console.log(userId);
                     }
                 });
                 // Now you can use the userId variable as needed
@@ -286,7 +285,6 @@
                 }
             });
 
-            console.log(streetAddress, apartment, city, state, zip, country);
             fetch('/user-account', {
                 method: 'POST',
                 headers: {

@@ -40,14 +40,12 @@ const verifyAdminLogin = async (req, res) => {
 
               const message = 'invalid password'
               res.render('adminLogin', { message });
-              console.log('password is incorrect');
           }
 
 
       } else {
 
           res.render('adminLogin', { message1: 'email is not found' });
-          console.log('email not foud in the database');
       }
 
   } catch (error) {
@@ -82,7 +80,58 @@ const adminLogout = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        res.render('dashboard')
+        const topProduct = await orderModel.aggregate([
+            { $unwind: "$items" },  
+            {
+              $lookup: {
+                from: "products",
+                localField: "items.productID",
+                foreignField: "_id",
+                as: "productDetails",
+              },
+            },
+            {
+              $group: {
+                _id: "$items.productID",
+                productName: { $first: "$productDetails.productName" },
+                totalQuantitySold: { $sum: "$items.quantity" },
+              },
+            },
+            { $project: { _id: 0, productName: 1, totalQuantitySold: 1 } },
+            { $sort: { totalQuantitySold: -1 } },
+            { $limit: 10 },
+          ]);
+          const topCategory = await orderModel.aggregate([
+            { $unwind: "$items" },  
+            {
+              $lookup: {
+                from: "products",
+                localField: "items.productID",
+                foreignField: "_id",
+                as: "productDetails",
+              },
+            },
+            { $unwind: "$productDetails" },  
+            {
+              $lookup: {
+                from: "categories",
+                localField: "productDetails.category",
+                foreignField: "_id",
+                as: "categoryDetails",
+              },
+            },
+            { $unwind: "$categoryDetails" },  
+            {
+              $group: {
+                _id: "$categoryDetails.categoriesName", 
+                totalQuantitySold: { $sum: "$items.quantity" },
+              },
+            },
+            { $sort: { totalQuantitySold: -1 } },
+            { $limit: 10 },
+          ]);
+          
+        res.render('dashboard',{topProduct,topCategory})
 
     } catch (error) {
         console.log(error.message);
@@ -397,112 +446,6 @@ const LoadSalesReport = async (req, res) => {
 }
 
 
-// const getSalesData = async (req, res) => {
-//   try {
-
-//       const { startdate, endDate } = req.body
-//       if (!startdate && !endDate) {
-//           return res.status(400).json({ message: 'please selecet an date ', value: 1 });
-//       } else {
-//           const salesdata = await orderModel
-//               .find({
-//                   orderDate: {
-//                       $gte: new Date(startdate),
-//                       $lte: new Date(endDate)
-//                   }
-//               }).populate('shippingAddress').populate('customerID');
-               
-//               console.log("salesdata",salesdata);
-//           const StringSalesData = salesdata.map(order => ({
-//               id: order.id.toString(),
-//               customerID: order.customerID.firstName,
-//               state: order.shippingAddress.state,
-//               town: order.shippingAddress.town,
-//               streetAddress: order.shippingAddress.streetAddress,
-//               houseName: order.shippingAddress.houseName,
-//               country: order.shippingAddress.country,
-//               zipcode: order.shippingAddress.zipcode,
-//               orderStatus: order.orderStatus,
-//               paymentMethod: order.paymentMethod,
-//               orderDate: order.orderDate.toLocaleDateString(),
-//               updateAt: order.updatedAt.toLocaleDateString(),
-//               trackId: order.trackID.toString(),
-//               totalAmount : order.totalAmount
-//           }))
-//          return res.status(200).json({StringSalesData});
-//       }
-
-//   } catch (error) {
-
-//       console.log(error.message);
-//       res.status(500).render('error')
-
-//   }
-// }
-
-
-
-// const getSalesData = async (req, res) => {
-//     try {
-//         const { startdate, endDate } = req.body;
-
-//         // Check if startdate and endDate are provided
-//         if (!startdate || !endDate) {
-//             return res.status(400).json({ message: 'Please provide both startdate and endDate.', value: 1 });
-//         }
-
-//         // Convert startdate and endDate to Date objects
-//         const startDateObj = new Date(startdate);
-//         const endDateObj = new Date(endDate);
-
-//         // Check if startDate and endDate are valid dates
-//         if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-//             return res.status(400).json({ message: 'Invalid date format.', value: 2 });
-//         }
-
-//         // Query orders within the specified date range and populate related fields
-//         const salesdata = await orderModel
-//             .find({
-//                 orderDate: {
-//                     $gte: startDateObj,
-//                     $lte: endDateObj
-//                 }
-//             })
-//             .populate('shippingAddress')
-//             .populate('customerID');
-
-//         // Check if salesdata is empty
-//         if (salesdata.length === 0) {
-//             return res.status(404).json({ message: 'No sales data found within the specified date range.', value: 3 });
-//         }
-
-//         // Format the sales data
-//         const StringSalesData = salesdata.map(order => ({
-//             id: order.id.toString(),
-//             customerID: order.customerID ? order.customerID.firstName : 'N/A', // Handle cases where customerID is null
-//             state: order.shippingAddress ? order.shippingAddress.state : 'N/A', // Handle cases where shippingAddress is null
-//             town: order.shippingAddress ? order.shippingAddress.town : 'N/A',
-//             streetAddress: order.shippingAddress ? order.shippingAddress.streetAddress : 'N/A',
-//             houseName: order.shippingAddress ? order.shippingAddress.houseName : 'N/A',
-//             country: order.shippingAddress ? order.shippingAddress.country : 'N/A',
-//             zipcode: order.shippingAddress ? order.shippingAddress.zipcode : 'N/A',
-//             orderStatus: order.orderStatus,
-//             paymentMethod: order.paymentMethod,
-//             orderDate: order.orderDate.toLocaleDateString(),
-//             updateAt: order.updatedAt.toLocaleDateString(),
-//             trackId: order.trackID.toString(),
-//             totalAmount: order.totalAmount
-//         }));
-//         console.log(StringSalesData)
-//         // Send the formatted sales data as a response
-//         return res.status(200).json({ salesData: StringSalesData });
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).json({ message: 'Internal server error.', value: 4 });
-//     }
-// };
-
-
 const getSalesData = async (req, res) => {
     try {
 
@@ -517,9 +460,8 @@ const getSalesData = async (req, res) => {
                         $lte: new Date(endDate)
                     }
                 }).populate('shippingAddress').populate('customerID');
-                 
-                console.log(salesdata);
-            const StringSalesData = salesdata.map(order => ({
+             
+                const StringSalesData = salesdata.map(order => ({
                 id: order.id.toString(),
                 customerID: order.customerID ? order.customerID.firstName : 'N/A',
                 // customerID: order.customerID.firstName,

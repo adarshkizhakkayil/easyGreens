@@ -68,6 +68,7 @@ userRoute.post('/reset-password',userController.resetPassword)
 userRoute.get('/allCoupon',couponController.loadAllCoupon)
 
 userRoute.post('/verifyCoupon',couponController.verifyCoupon)
+// sample
 
 // userRoute.get('/check-wishlist', auth.isLoggedIn, cartController.checkCart)
 userRoute.get('/wishlist', auth.isLoggedIn,cartController.Loadwishlist);

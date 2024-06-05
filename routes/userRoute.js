@@ -25,7 +25,6 @@ userRoute.get('/', auth.isLoggedOut, userController.loadHome);
 userRoute.get('/home', auth.isLoggedIn, userController.loadHome);
 userRoute.get('/signup', auth.isLoggedOut, userController.loadSignup);
 userRoute.post('/signup', userController.insertUser);
-userRoute.get('/signup/:_id',auth.isLoggedOut,userController.referralSignup)
 userRoute.get('/login', auth.isLoggedOut,  userController.loadLogin);
 userRoute.post('/login',auth.isLoggedIn, userController.verifyLogin);
 userRoute.get('/logout',userController.logout);

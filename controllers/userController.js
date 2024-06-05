@@ -7,6 +7,7 @@ const category = require("../models/categoryModel");
 const address = require("../models/userDetailsModel");
 const coupon = require("../models/couponModel");
 
+
 const { sendVerificationEmail } = require("../services/otpVerification");
 const {
   sendForgotPassOtp,
@@ -39,16 +40,7 @@ const loadSignup = async (req, res) => {
   }
 };
 
-const referralSignup = async (req, res) => {
-    try {
-      const _id = req.params._id;
-      req.session.refid = _id
-    
-      res.redirect("/signup");
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
 
 const insertUser = async (req, res) => {
   const spassword = await securepassword(req.body.password);
@@ -56,7 +48,9 @@ const insertUser = async (req, res) => {
   const username = req.body.firstname;
   try {
     const findemail = await user.findOne({ email: checkemail });
+    
     if (!findemail) {
+      let code = shortid.generate()
       const usersubmit = new user({
         firstName: req.body.firstname,
         secondName: req.body.lastname,
@@ -66,9 +60,41 @@ const insertUser = async (req, res) => {
         is_admin: 0,
         is_verified: 0,
         is_blocked: 0,
+        refercode:code
       });
       const userdata = await usersubmit.save();
       userid = userdata._id;
+      if (req.query.refercode) {
+        let refferalcode = req.query.refercode;
+        let id = req.query.userid;
+      
+        // Assuming the referralModel has the structure to find the referral details
+        let selectedRefer = await refferalModel.findOne();
+        let refferedamount = selectedRefer.refferedamount;
+        let refferalamount = selectedRefer.refferalamount;
+      
+        SignupWithReffer = true;
+      
+        // Find the user by ID
+        let user = await userModel.findById(id);
+        if (user) {
+          console.log('User found');
+      
+          // Update the wallet balance and add a transaction to the wallet history
+          user.wallet.walletAmount += refferalamount;
+          user.wallet.walletHistory.push({
+            amount: refferalamount,
+            type: 'credit(Refferal bonus)',
+            reason: 'Referral bonus for referring a user',
+          });
+      
+          // Save the updated user document
+          await user.save();
+        } else {
+          console.log('User not found');
+        }
+      }
+      
       if (userdata) {
         const clientOtp = await generateOTP();
         req.session.user = userdata;
@@ -86,6 +112,111 @@ const insertUser = async (req, res) => {
     res.status(500).render("error");
   }
 };
+
+// const insertUser = async (req, res) => {
+//   try {
+//     console.log('Received request:', req.method, req.url);
+//     console.log('Request body:', req.body);
+
+//     const spassword = await securepassword(req.body.password);
+//     const checkemail = req.body.email;
+//     const username = req.body.firstname;
+
+//     console.log('Starting user insertion process');
+
+//     const findemail = await user.findOne({ email: checkemail });
+
+//     if (!findemail) {
+//       console.log('Email not found, creating new user');
+      
+//       let code = shortid.generate();
+//       const usersubmit = new user({
+//         firstName: req.body.firstname,
+//         secondName: req.body.lastname,
+//         email: req.body.email,
+//         mobile: req.body.mobile,
+//         password: spassword,
+//         is_admin: 0,
+//         is_verified: 0,
+//         is_blocked: 0,
+//         refercode: code,
+//         wallet: {
+//           walletAmount: 0,
+//           walletHistory: []
+//         }
+//       });
+
+//       const userdata = await usersubmit.save();
+//       let userid = userdata._id;
+//       console.log('New user created:', userdata);
+
+//       // Check for referral code and update referrer's wallet
+//       if (req.body.refercode) {
+//         console.log('Referral code found:', req.body.refercode);
+        
+//         let refferalcode = req.body.refercode;
+//         let selectedRefer = await refferalModel.findOne({ code: refferalcode });
+
+//         if (selectedRefer) {
+//           console.log('Referral details found:', selectedRefer);
+
+//           let refferedamount = selectedRefer.refferedamount;
+//           let refferalamount = selectedRefer.refferalamount;
+
+//           let referrer = await userModel.findOne({ refercode: refferalcode });
+
+//           if (referrer) {
+//             console.log('Referrer found:', referrer);
+
+//             referrer.wallet.walletAmount += refferalamount;
+//             referrer.wallet.walletHistory.push({
+//               amount: refferalamount,
+//               type: 'credit',
+//               reason: 'Referral bonus for referring a user',
+//               date: new Date()
+//             });
+
+//             await referrer.save();
+//             console.log('Referrer wallet updated:', referrer.wallet);
+//           }
+
+//           // Update new user's wallet for being referred
+//           userdata.wallet.walletAmount += refferedamount;
+//           userdata.wallet.walletHistory.push({
+//             amount: refferedamount,
+//             type: 'credit',
+//             reason: 'Bonus for signing up with referral code',
+//             date: new Date()
+//           });
+
+//           await userdata.save();
+//           console.log('New user wallet updated:', userdata.wallet);
+//         } else {
+//           console.log('Invalid referral code');
+//         }
+//       }
+
+//       if (userdata) {
+//         const clientOtp = await generateOTP();
+//         req.session.user = userdata;
+//         req.session.otp = clientOtp;
+//         await sendVerificationEmail(checkemail, clientOtp, username);
+//         res.redirect("/otpverification");
+//       }
+//     } else {
+//       console.log('Email already in use');
+//       res.render("userSignup", {
+//         message1: "Email already in use, please try another one!",
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error during user insertion:', error.message);
+//     res.status(500).render("error");
+//   }
+// };
+
+
+
 
 const loadOtp = async (req, res) => {
   try {
@@ -136,6 +267,7 @@ const resendforgotPasswordOtp = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
   try {
+  
     if (req.session.otp === req.body.otp) {
       const data = await user
         .updateOne({ _id: userid }, { $set: { is_verified: 1 } })
@@ -352,7 +484,8 @@ const loadProfile = async (req, res) => {
       const finduser = await user.findById({ _id: req.session.user._id });
       const Address = await address.find({ user: req.session.user._id });
       const coupons = await coupon.find();
-      res.render("userProfile", { user: finduser, Address, coupons });
+      let refer = await refferalModel.findOne()
+      res.render("userProfile", { user: finduser, Address, coupons,refer });
     } else {
       res.redirect("/signup");
     }
@@ -587,7 +720,6 @@ const resetPassword = async (req, res) => {
 module.exports = {
   loadHome,
   loadSignup,
-  referralSignup,
   insertUser,
   loadOtp,
   verifyOtp,

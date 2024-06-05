@@ -5,7 +5,6 @@ const productModel = require('../models/productModel');
 const orderModel = require('../models/orderModel')
 const moment = require('moment');;
 
-
 const loadAdminLogin = async (req, res) => {
     try {
       res.render('adminLogin')

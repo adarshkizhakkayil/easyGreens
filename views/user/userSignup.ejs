@@ -159,6 +159,8 @@
                             <input required placeholder="" id="password1" name="password1" type="password" min="6" max="30" class="input">
                             <span>Confirm password</span>
                         </label>
+                        
+                        <input type="hidden" id="refercode" name="refercode" value="">
                         <button type="submit" class="button">
                             Signup
                         </button>
@@ -179,6 +181,15 @@
     <script src="/user/signup/js/mixitup.min.js"></script>
     <script src="/user/signup/js/owl.carousel.min.js"></script>
     <script src="/user/signup/js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const refercode = urlParams.get('refercode');
+          if (refercode) {
+            document.getElementById('refercode').value = refercode;
+          }
+        });
+      </script>
 </body>
 
 </html>
